@@ -1,76 +1,208 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
+<title>Chess Academy</title>
 
-    <title>Chess World</title>
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.css">
 
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard.min.js"></script>
 
-    <style>
+<style>
 
-        body {
-            font-family: Arial;
-            background: linear-gradient(135deg,#4caf50,#2e7d32);
-            text-align: center;
-            color: white;
-        }
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+}
 
-        #board {
-            width: 420px;
-            margin: auto;
-            box-shadow: 0 0 20px black;
-            border-radius: 10px;
-        }
+/* MENU */
 
-        button {
-            padding: 12px 20px;
-            margin: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            background: #ffcc00;
-            transition: 0.3s;
-        }
+.menu{
+display:flex;
+justify-content:center;
+gap:30px;
+padding:20px;
+background:#020617;
+box-shadow:0 4px 10px black;
+}
 
-            button:hover {
-                transform: scale(1.1);
-                background: #ffd633;
-            }
-    </style>
+.menu button{
+background:#3b82f6;
+border:none;
+padding:12px 20px;
+color:white;
+font-size:16px;
+border-radius:10px;
+cursor:pointer;
+transition:.3s;
+}
+
+.menu button:hover{
+transform:scale(1.1);
+background:#2563eb;
+}
+
+/* SCREENS */
+
+.screen{
+display:none;
+padding:40px;
+}
+
+.active{
+display:block;
+}
+
+/* CHESS BOARD */
+
+#board{
+width:420px;
+margin:auto;
+}
+
+/* PROFILE */
+
+.profile{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+width:250px;
+margin:auto;
+}
+
+.avatar{
+width:80px;
+border-radius:50%;
+}
+
+/* PUZZLE */
+
+.puzzle-box{
+background:#1e293b;
+padding:20px;
+border-radius:10px;
+width:400px;
+margin:auto;
+}
+
+/* ANIMATIONS */
+
+.fade{
+animation:fade .4s ease;
+}
+
+@keyframes fade{
+from{opacity:0; transform:translateY(10px)}
+to{opacity:1}
+}
+
+</style>
 </head>
 
 <body>
 
-    <h1>Chess World</h1>
+<!-- MENU -->
 
-    <div id="board"></div>
+<div class="menu">
+<button onclick="show('play')">Play</button>
+<button onclick="show('puzzle')">Puzzles</button>
+<button onclick="show('profile')">Profile</button>
+<button onclick="show('leaderboard')">Leaderboard</button>
+</div>
 
-    <button onclick="saveGame()">Save Game</button>
-    <button onclick="loadGame()">Load Game</button>
-    <button onclick="resetGame()">Reset</button>
+<!-- PLAY SCREEN -->
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<div id="play" class="screen active fade">
 
-    <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+<h1>Play Chess</h1>
 
-    <script src="https://cdn.jsdelivr.net/npm/stockfish/stockfish.js"></script>
+<div id="board"></div>
 
-    <script>
+<p id="status"></p>
+
+</div>
+
+<!-- PUZZLE -->
+
+<div id="puzzle" class="screen fade">
+
+<h1>Chess Puzzle</h1>
+
+<div class="puzzle-box">
+
+<p>Find the best move!</p>
+
+<div id="puzzleBoard" style="width:350px;margin:auto"></div>
+
+<button onclick="newPuzzle()">New Puzzle</button>
+
+<p id="puzzleStatus"></p>
+
+</div>
+
+</div>
+
+<!-- PROFILE -->
+
+<div id="profile" class="screen fade">
+
+<h1>Your Profile</h1>
+
+<div class="profile">
+
+<img class="avatar" src="https://i.imgur.com/7k12EPD.png">
+
+<h2>Player</h2>
+
+<p>Coins: <span id="coins">100</span></p>
+
+<p>XP: <span id="xp">0</span></p>
+
+</div>
+
+</div>
+
+<!-- LEADERBOARD -->
+
+<div id="leaderboard" class="screen fade">
+
+<h1>Leaderboard</h1>
+
+<p>1. ChessMaster - 1500</p>
+<p>2. PawnDestroyer - 1200</p>
+<p>3. You - 900</p>
+
+</div>
+
+<script>
+
+/* MENU SWITCH */
+
+function show(id){
+
+document.querySelectorAll(".screen").forEach(s=>{
+s.classList.remove("active")
+})
+
+document.getElementById(id).classList.add("active")
+
+}
+
+/* CHESS GAME */
 
 var game = new Chess()
 
 var board = Chessboard('board',{
 draggable:true,
 position:'start',
-onDrop:onDrop,
-moveSpeed:200
+onDrop:move
 })
 
-var engine = STOCKFISH()
-
-function onDrop(source,target){
+function move(source,target){
 
 var move = game.move({
 from:source,
@@ -80,69 +212,76 @@ promotion:'q'
 
 if(move === null) return 'snapback'
 
-board.position(game.fen())
-
-makeAIMove()
+setTimeout(aiMove,400)
 
 }
 
-function makeAIMove(){
+/* SIMPLE AI */
 
-engine.postMessage("position fen "+game.fen())
+function aiMove(){
 
-engine.postMessage("go depth 12")
+var moves = game.moves()
 
-engine.onmessage=function(event){
+var randomMove = moves[Math.floor(Math.random()*moves.length)]
 
-if(event.data.startsWith("bestmove")){
+game.move(randomMove)
 
-var move = event.data.split(" ")[1]
+board.position(game.fen())
 
-game.move({
-from:move.substring(0,2),
-to:move.substring(2,4),
+}
+
+/* PUZZLES */
+
+var puzzleGame = new Chess()
+
+var puzzleBoard = Chessboard('puzzleBoard',{
+draggable:true,
+position:'start',
+onDrop:puzzleMove
+})
+
+function newPuzzle(){
+
+puzzleGame.reset()
+
+puzzleBoard.position('r1bqkbnr/pppp1ppp/2n5/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R b KQkq - 2 3')
+
+document.getElementById("puzzleStatus").innerText="Black to move"
+
+}
+
+function puzzleMove(source,target){
+
+var move = puzzleGame.move({
+from:source,
+to:target,
 promotion:'q'
 })
 
-board.position(game.fen())
+if(move === null) return 'snapback'
+
+document.getElementById("puzzleStatus").innerText="Nice move!"
+
+addXP()
 
 }
 
-}
+/* XP SYSTEM */
+
+var xp=0
+var coins=100
+
+function addXP(){
+
+xp+=10
+coins+=5
+
+document.getElementById("xp").innerText=xp
+document.getElementById("coins").innerText=coins
 
 }
 
-function saveGame(){
-
-localStorage.setItem("savedChess",game.fen())
-
-alert("Game Saved")
-
-}
-
-function loadGame(){
-
-var fen = localStorage.getItem("savedChess")
-
-if(fen){
-
-game.load(fen)
-
-board.position(fen)
-
-}
-
-}
-
-function resetGame(){
-
-game.reset()
-
-board.start()
-
-}
-
-    </script>
+</script>
 
 </body>
 </html>
