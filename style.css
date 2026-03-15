@@ -1,0 +1,52 @@
+body{
+font-family:Arial;
+margin:0;
+background:#f4f6fb;
+}
+
+.hidden{
+display:none;
+}
+
+#login{
+text-align:center;
+margin-top:150px;
+}
+
+.sidebar{
+position:fixed;
+width:220px;
+height:100vh;
+background:#1f2937;
+color:white;
+padding:20px;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+margin:10px 0;
+}
+
+.main{
+margin-left:240px;
+padding:20px;
+}
+
+.skill{
+background:white;
+padding:15px;
+margin:10px 0;
+border-radius:10px;
+}
+
+#problemBox{
+background:white;
+padding:20px;
+border-radius:10px;
+}
+
+canvas{
+background:white;
+border:1px solid #ccc;
+}
